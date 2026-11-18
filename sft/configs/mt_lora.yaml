@@ -1,0 +1,30 @@
+# LoRA SFT on the merged MT checkpoint. Paths are as seen inside the container,
+# where images/trainer/README.md mounts olala-mt at /workspace/olala-mt.
+model_path: /workspace/olala-mt/checkpoints/merge_eq3__mtsft13482__mtsft13482-orpo__mtsft13482-orpo-grpo-nojudge-step80
+output_dir: /workspace/olala-mt/runs/mt_lora
+
+# Pre-rendered prompts + the preferred answer from a preference file.
+# For a `messages` file, nothing else needs setting.
+train_files:
+  - /workspace/olala-mt/dpo_datasets/olala_mtsft13482_ts_numbers.jsonl
+eval_files: []
+prompt_field: prompt
+completion_field: chosen      # already wrapped in <|channel_start|>final ... <|im_end|>
+wrap_completion: false        # true for raw-text targets (e.g. rl_data's `ref`)
+
+max_length: 4096
+overlong: drop
+
+lora:
+  r: 32
+  alpha: 64
+  dropout: 0.05
+
+training:
+  num_train_epochs: 2
+  per_device_train_batch_size: 8
+  gradient_accumulation_steps: 2
+  learning_rate: 1.0e-4
+  warmup_steps: 50
+  save_steps: 500
+  logging_steps: 10

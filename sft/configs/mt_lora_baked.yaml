@@ -1,0 +1,34 @@
+# General-domain LoRA SFT config in the sft image (images/sft/Dockerfile); the default is
+# mt_lora_ecb.yaml (in-domain finance). Run this one with CONFIG=/opt/mt/sft/configs/mt_lora_baked.yaml
+# and BENCH_FILE=/opt/mt/data/open/opus100_enfr_eval.jsonl.
+# Checkpoint and data are inside the image; output goes to /workspace/out (an OVH :rw bucket).
+#
+# Data: a small OPEN en<->fr set from opus-100 (open_data/make_opus100_enfr.py), no in-house
+# data. `messages` rows with the tutorial's translation prompt; loss on the assistant turn.
+model_path: /opt/ckpt/ovhaillm-rl   # OvhaiLLM-RL (RL run ART, global step 294)
+output_dir: /workspace/out
+
+train_files:
+  - /opt/mt/data/open/opus100_enfr_train.jsonl   # 2000 pairs, half en->fr, half fr->en
+eval_files:
+  - /opt/mt/data/open/opus100_enfr_eval.jsonl    # 200 pairs from opus-100 validation
+
+max_length: 4096
+overlong: drop
+
+lora:
+  r: 32
+  alpha: 64
+  dropout: 0.05
+
+training:
+  num_train_epochs: 2            # 2000 rows / (8 x 2) per step -> 250 steps on 1 GPU
+  per_device_train_batch_size: 8
+  gradient_accumulation_steps: 2
+  learning_rate: 1.0e-4
+  warmup_steps: 25
+  logging_steps: 10
+  eval_strategy: steps
+  eval_steps: 50
+  per_device_eval_batch_size: 8
+  save_steps: 125

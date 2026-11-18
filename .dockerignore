@@ -1,0 +1,12 @@
+# The build context is the olala-mt root, which also holds checkpoints and data.
+# Only code and the open data in open_data/ go in; checkpoints come in as a separate build
+# context, and the in-house data (dpo_datasets/, rl_data/) never goes into an image.
+*
+!sft/
+!images/
+!colab/translation_sft.py
+!open_data/make_opus100_enfr.py
+!open_data/opus100_enfr_*.jsonl
+!open_data/make_ecb_enfr.py
+!open_data/ecb_enfr_*.jsonl
+**/__pycache__

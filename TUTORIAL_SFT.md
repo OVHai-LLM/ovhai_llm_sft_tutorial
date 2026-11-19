@@ -213,13 +213,13 @@ pip install torch==2.11.0 transformers==5.8.0 trl==1.5.1 peft==0.19.1 accelerate
 pip install --no-deps https://github.com/erictang000/flash-attention/releases/download/v2.8.3-torch2.11-clean/flash_attn-2.8.3-cp312-cp312-linux_x86_64.whl
 
 # the Mamba-3 and ScatterMoE kernels (pure Python, compiled on first use), at the notebook's commits
-for spec in OVHai-LLM/mamba@039a089 shawntan/scattermoe@47b5e15 OVHai-LLM/olala-v1@1212600; do
+for spec in OVHai-LLM/mamba@039a089 shawntan/scattermoe@47b5e15; do
     repo=${spec%@*}; d=$(basename $repo)
     [ -d $d ] || git clone -q --filter=blob:none https://github.com/$repo $d
     git -C $d checkout -q ${spec#*@}
 done
 printf "$PWD/mamba\n$PWD/scattermoe\n" > "$(python -c 'import site; print(site.getsitepackages()[0])')/olala_kernels.pth"
-bash olala-v1/scripts/apply_olala_training_fixes.sh --python "$(which python)" --scattermoe "$PWD/scattermoe"
+bash scripts/apply_olala_training_fixes.sh --python "$(which python)" --scattermoe "$PWD/scattermoe"
 ```
 
 The three GitHub repos: [`OVHai-LLM/mamba`](https://github.com/OVHai-LLM/mamba) (the Mamba-3 kernels), [ScatterMoE](https://github.com/shawntan/scattermoe) (the experts) and [`OVHai-LLM/olala-v1`](https://github.com/OVHai-LLM/olala-v1) (the model code and the training fixes).

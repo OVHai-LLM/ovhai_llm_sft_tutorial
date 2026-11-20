@@ -43,7 +43,7 @@ md(r"""
 
 We pin every library to the versions Olala was validated with. Olala's Mamba-3 kernels come from the
 [`OVHai-LLM/mamba`](https://github.com/OVHai-LLM/mamba) fork, and its experts from [ScatterMoE](https://github.com/shawntan/scattermoe).
-The training fixes come from the model repo, [`OVHai-LLM/olala-v1`](https://github.com/OVHai-LLM/olala-v1).
+The training fixes (a few patches to ScatterMoE) come from this tutorial's repository, `script/apply_olala_training_fixes.sh`.
 Both are pure Python with kernels compiled on first use, so they need no build step. Attention uses
 [FlashAttention 2](https://github.com/Dao-AILab/flash-attention), from a prebuilt wheel for torch 2.11 (the one Olala's
 environment pins); without it, the model falls back to PyTorch's slower flex attention. This takes about 5 minutes.
@@ -60,11 +60,12 @@ sh("pip install -q torch==2.11.0 transformers==5.8.0 trl==1.5.1 peft==0.19.1 acc
    "tilelang==0.1.9 apache-tvm-ffi==0.1.9 torch-c-dlpack-ext==0.1.5 nvidia-cutlass-dsl==4.5.2 cuda-python==12.9.7 "
    "quack-kernels==0.5.0 z3-solver==4.15.4.0 einops==0.8.2 flash-linear-attention==0.5.2 fla-core==0.5.2 ninja")
 sh("pip install -q --no-deps https://github.com/erictang000/flash-attention/releases/download/v2.8.3-torch2.11-clean/flash_attn-2.8.3-cp312-cp312-linux_x86_64.whl")
-for repo, commit in [("OVHai-LLM/mamba", "039a089"), ("shawntan/scattermoe", "47b5e15"), ("OVHai-LLM/olala-v1", "1212600")]:
+for repo, commit in [("OVHai-LLM/mamba", "039a089"), ("shawntan/scattermoe", "47b5e15")]:
     d = "/content/" + repo.split("/")[1]
     sh(f"[ -d {d} ] || git clone -q --filter=blob:none https://github.com/{repo} {d}; git -C {d} checkout -q {commit}")
 open(f"{site.getsitepackages()[0]}/olala_kernels.pth", "w").write("/content/mamba\n/content/scattermoe\n")
-sh(f"bash /content/olala-v1/scripts/apply_olala_training_fixes.sh --python {sys.executable} --scattermoe /content/scattermoe")
+sh("curl -sSfL -o /content/apply_olala_training_fixes.sh https://raw.githubusercontent.com/OVHai-LLM/ovhai_llm_sft_tutorial/main/script/apply_olala_training_fixes.sh")
+sh(f"bash /content/apply_olala_training_fixes.sh --python {sys.executable} --scattermoe /content/scattermoe")
 ''')
 
 md(r"""

@@ -198,7 +198,7 @@ The same tutorial as B, as a script, on your own GPU.
 - **Possibly the CUDA toolkit** (`nvcc`, 12.8). The Mamba-3 kernels (TileLang) compile at run time. Colab has the toolkit preinstalled, but a bare machine may not.
 - **The base checkpoint folder on disk,** with the files listed in B.
 
-**1. Install** (once). These are the same steps as the notebook's install cell, in a fresh venv:
+**1. Install** (once), from the repo's folder. These are the same steps as the notebook's install cell, in a fresh venv:
 
 ```bash
 python3.12 -m venv mt-venv && source mt-venv/bin/activate
@@ -219,10 +219,12 @@ for spec in OVHai-LLM/mamba@039a089 shawntan/scattermoe@47b5e15; do
     git -C $d checkout -q ${spec#*@}
 done
 printf "$PWD/mamba\n$PWD/scattermoe\n" > "$(python -c 'import site; print(site.getsitepackages()[0])')/olala_kernels.pth"
-bash scripts/apply_olala_training_fixes.sh --python "$(which python)" --scattermoe "$PWD/scattermoe"
+
+# the training fixes (patches to ScatterMoE), from this repo
+bash script/apply_olala_training_fixes.sh --python "$(which python)" --scattermoe "$PWD/scattermoe"
 ```
 
-The three GitHub repos: [`OVHai-LLM/mamba`](https://github.com/OVHai-LLM/mamba) (the Mamba-3 kernels), [ScatterMoE](https://github.com/shawntan/scattermoe) (the experts) and [`OVHai-LLM/olala-v1`](https://github.com/OVHai-LLM/olala-v1) (the model code and the training fixes).
+The two GitHub repos: [`OVHai-LLM/mamba`](https://github.com/OVHai-LLM/mamba) (the Mamba-3 kernels) and [ScatterMoE](https://github.com/shawntan/scattermoe) (the experts). The model code comes with the checkpoint, and the training fixes are in this repo, `script/`.
 
 **2. Run,** from the repo:
 

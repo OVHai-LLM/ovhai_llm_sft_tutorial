@@ -37,6 +37,7 @@ images/   Dockerfiles (trainer/, tutorial/, sft/) and their build scripts
 open_data/ open en<->fr SFT sets and the scripts that build them: ECB finance (4000 + 400, make_ecb_enfr.py)
           and opus-100 general (2000 + 200, make_opus100_enfr.py)
 ovh/      OVHcloud AI Training launch scripts (see ovh/README.md)
+script/   apply_olala_training_fixes.sh: the patches the Colab and local installs apply to ScatterMoE
 ```
 
 
